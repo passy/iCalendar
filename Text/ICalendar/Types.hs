@@ -323,7 +323,8 @@ data Attachment
     { attachFmtType :: Maybe MIMEType
     , attachContent :: ByteString
     , attachOther   :: OtherParams
-    } deriving (Show, Eq, Ord, Typeable)
+    }
+    | FailedAttachment deriving (Show, Eq, Ord, Typeable)
 
 -- | Categories. 3.8.1.2.
 data Categories = Categories

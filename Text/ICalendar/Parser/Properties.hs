@@ -176,6 +176,8 @@ parseAttachment (ContentLine _ "ATTACH" o bs) = do
                                                   (toO $ filter binF o)
                   _ -> throwError $ "parseAttachment: invalid encoding: " ++
                                         show enc
+         Just "URI" -> do uri <- asks (T.unpack . ($ bs) . dfBS2Text)
+                          return $ FailedAttachment
          Nothing -> do uri <- parseURI =<< asks (T.unpack . ($ bs) . dfBS2Text)
                        return $ UriAttachment fmt uri (toO $ filter f o)
          _ -> throwError $ "parseAttachment: invalid value: " ++ show val
@@ -216,7 +218,8 @@ parseRecurId dts (ContentLine p "RECURRENCE-ID" o bs) = do
                     (FloatingDateTime {}, UTCDateTime {}) -> err dts recurid
                     (ZonedDateTime {}, UTCDateTime {})    -> err dts recurid
                     _ -> return recurid
-         _ -> err dts recurid
+         -- _ -> err dts recurid
+         _ -> return recurid
   where err d r = throwError $ "parseRecurId: DTSTART local time mismatch: " ++
                                 show (d, r)
 parseRecurId _ x = throwError $ "parseRecurId: " ++ show x
